@@ -51,4 +51,14 @@ test.serial("after registration and redirect user name is visible", async (t) =>
     t.assert(response.text.includes("name"))
 })
 
+// TODO: logout
+
+// TODO: update profile
+
+// TODO: signup
+
+// TODO: update password
+
+// TODO: password recovery
+
 // TODO: check auth middlewares
