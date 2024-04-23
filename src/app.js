@@ -1,12 +1,14 @@
 import express from "express"
 import { db, createUser, getUserByToken } from "./db.js"
-import cookieParser from 'cookie-parser'
-
+import cookieParser from "cookie-parser"
+import expressLayouts from "express-ejs-layouts"
 export const app = express()
 
+app.use(expressLayouts)
+app.set("layout", "./layouts/default")
 app.set("view engine", "ejs")
 
-app.use(express.static('public'))
+app.use(express.static("public"))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
@@ -14,7 +16,7 @@ const authorized = (req, res, next) => {
     if (res.locals.user) {
         next()
     } else {
-        res.redirect('/register')
+        res.redirect("/register")
     }
 }
 
@@ -22,7 +24,7 @@ const guest = (req, res, next) => {
     if (! res.locals.user) {
         next()
     } else {
-        res.redirect('/')
+        res.redirect("/")
     }
 }
 
@@ -44,11 +46,12 @@ app.use((req, res, next) => {
 })
 
 app.get("/", async (req, res) => {
-    res.render("index")
+    // TODO: change layout if user is not authorized to guest layout
+    res.render("index", { title: "Home" })
 })
 
 app.get("/register", guest, async (req, res) => {
-    res.render("users/register")
+    res.render("users/register", { title: "Register" })
 })
 
 app.post("/register", guest, async (req, res) => {
@@ -64,7 +67,7 @@ app.post("/register", guest, async (req, res) => {
 })
 
 app.get("/account", authorized, async (req, res) => {
-    res.render("users/account")
+    res.render("users/account", { title: 'Account' })
 })
 
 app.use((req, res) => {
