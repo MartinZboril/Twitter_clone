@@ -1,1 +1,9 @@
-Index
+<% if (user) { %>
+    <a href="/account"><%= user.name %></a>
+<% } else { %>
+    <a href="/register">Registrace</a>
+<% } %>
+
+<hr />
+
+Home
