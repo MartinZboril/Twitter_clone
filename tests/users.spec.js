@@ -1,7 +1,8 @@
 import test from "ava"
 import supertest from "supertest"
 import { app } from "../src/app.js"
-import { db, createUser, getUser } from "../src/db.js"
+import db from "../src/db.js"
+import { createUser, getUser } from "../src/db/users.js";
 
 test.beforeEach(async () => {
     await db.migrate.latest()

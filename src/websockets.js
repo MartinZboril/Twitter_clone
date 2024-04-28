@@ -5,15 +5,11 @@ const connections = new Set()
 export const createWebSocketServer = (server) => {
   const wss = new WebSocketServer({ server })
 
-  wss.on("connection", (socket) => {
-    connections.add(socket)
+  wss.on('connection', (ws) => {
+    connections.add(ws)
 
-    console.log("New connection", connections.size)
-
-    socket.on("close", () => {
-      connections.delete(socket)
-
-      console.log("Closed connection", connections.size)
+    ws.on('close', () => {
+      connections.delete(ws)
     })
   })
 }
