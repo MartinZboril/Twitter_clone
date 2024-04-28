@@ -2,7 +2,9 @@
     <% if (user) { %>
         <a href="/">Home</a>
         <a href="/account"><%= user.name %></a>
+        <a href="/logout">Logout</a>
     <% } else { %>
-        <a href="/register">Registrace</a>
+        <a href="/register">Register</a>
+        <a href="/login">Login</a>
     <% } %>
 </header>
