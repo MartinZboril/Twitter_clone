@@ -1,0 +1,8 @@
+Edit profile
+
+<form method="post" action="/edit-profile">
+    <input name="email" placeholder="Email" value="<%= user.email %>">
+    <input name="name" placeholder="Name" value="<%= user.name %>">
+    <input name="bio" placeholder="Bio" value="<%= user.bio %>">
+    <button type="submit">Edit</button>
+</form>

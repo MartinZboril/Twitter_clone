@@ -1,7 +1,7 @@
 <header>
     <% if (user) { %>
         <a href="/">Home</a>
-        <a href="/account"><%= user.name %></a>
+        <a href="/profile"><%= user.name %></a>
         <a href="/logout">Logout</a>
     <% } else { %>
         <a href="/register">Register</a>

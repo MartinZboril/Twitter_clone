@@ -27,3 +27,19 @@ export const getUser = async (email, password) => {
 export const getUserByToken = async (token) => {
     return db('users').where({ token }).first()
 }
+
+export const updateUser = async (id, email, name, bio) => {
+    const [user] = await db('users').where({ id }).update({ name, bio, email }).returning('*')
+
+    return user
+}
+
+export const changeUserPassword = async (id, password) => {
+    const salt = crypto.randomBytes(16).toString('hex')
+    const hash = crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex')
+    const token = crypto.randomBytes(16).toString('hex')
+
+    const [user] = await db('users').where({ id }).update({ salt, hash, token }).returning('*')
+
+    return user
+}

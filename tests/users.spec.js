@@ -107,9 +107,50 @@ test.serial("POST /logout will remove the user token", async (t) => {
     t.falsy(tokenCookieAfterLogout)
 })
 
-// TODO: update profile
+// TODO: mock signed user
+test.serial("GET /edit profile shows form for update user profile", async (t) => {
+    const response = await supertest(app).get("/edit-profile")
 
-// TODO: update password
+    t.assert(response.text.includes("Edit profile"))
+})
+
+// TODO: mock signed user
+test.serial("POST /edit profile will update user", async (t) => {
+    const user = await createUser("email", "password", "name", "bio")
+
+    await supertest(app).post("/edit-profile").type("form").send({ email: "email", name: "updated name", bio: "bio" })
+
+    const updatedUser = await getUser("email", "password")
+
+    t.deepEqual(updatedUser.name, "updated name")
+})
+
+// TODO: mock signed user
+test.serial("after profile editing and redirect user name is updated", async (t) => {
+    const user = await createUser("email", "password", "name", "bio")
+    const agent = supertest.agent(app)
+
+    const response = await agent.post("/edit-profile").type("form").send({ email: "email", name: "updated name", bio: "bio" }).redirects(1)
+
+    t.assert(response.text.includes("updated name"))
+})
+
+// TODO: mock signed user
+test.serial("GET /change password shows form for update user password", async (t) => {
+    const response = await supertest(app).get("/change-password")
+
+    t.assert(response.text.includes("Change password"))
+})
+
+// TODO: mock signed user
+test.serial("POST /change password will update user password", async (t) => {
+    // TODO: make test
+})
+
+// TODO: mock signed user
+test.serial("after password change user can signed with new password", async (t) => {
+    // TODO: make test
+})
 
 // TODO: password recovery
 
