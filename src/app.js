@@ -4,7 +4,10 @@ import expressLayouts from "express-ejs-layouts"
 import { usersRouter } from "./routes/users.js"
 import { loadUser } from "./middlewares/loadUser.js"
 import { tweetsRouter } from "./routes/tweets.js"
-import { getAllTweets } from "./db/tweets.js"
+import {
+  getAllTweets,
+  hasUserLikedTweet,
+} from "./db/tweets.js"
 
 export const app = express()
 
@@ -20,6 +23,13 @@ app.use(loadUser)
 
 app.get("/", async (req, res) => {
   const tweets = await getAllTweets()
+
+  for (let tweet of tweets) {
+    tweet.userLiked = await hasUserLikedTweet(
+      tweet.id,
+      res.locals.user.id,
+    )
+  }
 
   // TODO: change layout if user is not authorized to guest layout
   res.render("index", {

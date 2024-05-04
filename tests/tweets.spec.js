@@ -88,7 +88,74 @@ test.serial("remove tweet", async (t) => {
   t.assert(!response.text.includes("My tweet"))
 })
 
-// TODO: like tweet
+test.serial("like a tweet", async (t) => {
+  const [tweet] = await db("tweets")
+    .insert({
+      content: "A tweet to like",
+      user_id: 1,
+    })
+    .returning("*")
+
+  const response = await agent
+    .post(`/like-tweet/${tweet.id}`)
+    .send()
+
+  t.assert(response.status === 302)
+
+  const likes = await db("likes").where({
+    user_id: 1,
+    likeable_id: tweet.id,
+    likeable_type: "tweets",
+  })
+  t.assert(likes.length === 1)
+})
+
+test.serial("unlike a tweet", async (t) => {
+  const [tweet] = await db("tweets")
+    .insert({
+      content: "A tweet to unlike",
+      user_id: 1,
+    })
+    .returning("*")
+
+  await db("likes").insert({
+    user_id: 1,
+    likeable_id: tweet.id,
+    likeable_type: "tweets",
+  })
+
+  const response = await agent
+    .post(`/unlike-tweet/${tweet.id}`)
+    .send()
+
+  t.assert(response.status === 302)
+
+  const likes = await db("likes").where({
+    user_id: 1,
+    likeable_id: tweet.id,
+    likeable_type: "tweets",
+  })
+  t.assert(likes.length === 0)
+})
+
+test.serial("tweet detail shows like status", async (t) => {
+  const [tweet] = await db("tweets")
+    .insert({
+      content: "Tweet to check like status",
+      user_id: 1,
+    })
+    .returning("*")
+
+  await db("likes").insert({
+    user_id: 1,
+    likeable_id: tweet.id,
+    likeable_type: "tweets",
+  })
+
+  const response = await agent.get(`/tweet/${tweet.id}`)
+
+  t.assert(response.text.includes("unlike"))
+})
 
 // TODO: comment tweet
 

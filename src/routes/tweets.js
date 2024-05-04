@@ -9,6 +9,9 @@ import {
   deleteTweet,
   getTweetById,
   updateTweet,
+  addLike,
+  removeLike,
+  hasUserLikedTweet,
 } from "../db/tweets.js"
 import { authorized } from "../middlewares/authorized.js"
 import { tweetBelongsToCurrentUser } from "../middlewares/tweetBelongsToCurrentUser.js"
@@ -22,6 +25,11 @@ tweetsRouter.get(
     const tweet = await getTweetById(req.params.id)
 
     if (!tweet) return next()
+
+    tweet.userLiked = await hasUserLikedTweet(
+      tweet.id,
+      res.locals.user.id,
+    )
 
     res.render("tweets/tweet", {
       title: "Tweet",
@@ -37,8 +45,8 @@ tweetsRouter.post(
     const content = req.body.content
     const userId = res.locals.user.id
 
-    await createTweet(content, userId)
-
+    const tweet = await createTweet(content, userId)
+    await sendTweetListToAllConnections()
     res.redirect("/")
   },
 )
@@ -52,10 +60,7 @@ tweetsRouter.post(
     if (!tweet) return next()
 
     await updateTweet(tweet.id, req.body.content)
-
-    await sendTweetListToAllConnections()
     await sendTweetDetailToAllConnections(tweet.id)
-
     res.redirect("back")
   },
 )
@@ -66,14 +71,33 @@ tweetsRouter.get(
   tweetBelongsToCurrentUser,
   async (req, res) => {
     const tweet = await getTweetById(req.params.id)
-
     if (!tweet) return next()
 
     await deleteTweet(tweet.id)
-
-    await sendTweetListToAllConnections()
     await sendTweetDeletedToAllConnections(tweet.id)
-
     res.redirect("/")
+  },
+)
+
+tweetsRouter.post(
+  "/like-tweet/:id",
+  authorized,
+  async (req, res) => {
+    const userId = res.locals.user.id
+    const tweetId = req.params.id
+
+    await addLike(userId, tweetId)
+    res.redirect("back")
+  },
+)
+tweetsRouter.post(
+  "/unlike-tweet/:id",
+  authorized,
+  async (req, res) => {
+    const userId = res.locals.user.id
+    const tweetId = req.params.id
+
+    await removeLike(userId, tweetId)
+    res.redirect("back")
   },
 )

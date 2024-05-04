@@ -5,3 +5,13 @@
 <a href="/remove-tweet/<%= tweet.id %>">
     remove
 </a>
+&nbsp;
+<% if (!tweet.userLiked) { %>
+    <form method="POST" action="/like-tweet/<%= tweet.id %>">
+        <button type="submit">Like</button>
+    </form>
+<% } else { %>
+    <form method="POST" action="/unlike-tweet/<%= tweet.id %>">
+        <button type="submit">Unlike</button>
+    </form>
+<% } %>
