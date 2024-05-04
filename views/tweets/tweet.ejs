@@ -1,0 +1,34 @@
+<div id="tweetDetail">
+    <%- include('partials/_tweet') %>
+</div>
+
+<hr>
+
+<form method="post" action="/update-tweet/<%= tweet.id %>">
+    <h2>Update tweet</h2>
+    <label>Content</label>
+    <input placeholder="Tweet" name="content" value="<%= tweet.content %>">
+    <button type="submit">Update</button>
+</form>
+
+<hr>
+
+<a href="/">Back to the list</a>
+
+<script>
+    const ws = new WebSocket('ws://localhost:3000')
+
+    ws.addEventListener('message', (ev) => {
+        const data = JSON.parse(ev.data)
+
+        if (String(data.id) === "<%= tweet.id %>") {
+            if (data.type === 'tweetDetail') {
+                const el = document.getElementById('tweetDetail')
+                el.innerHTML = data.html
+            } else if (data.type === 'tweetDeleted') {
+                alert('Tweet was deleted')
+                window.location.assign('/')
+            }
+        }
+    })
+</script>

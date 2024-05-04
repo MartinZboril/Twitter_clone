@@ -10,7 +10,7 @@ export default {
     test: {
         client: "sqlite3",
         connection: {
-            filename: "./testdb.sqlite",
+            filename: ":memory:",
         },
         useNullAsDefault: false,
     },

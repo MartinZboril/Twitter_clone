@@ -1,7 +1,7 @@
-export default async (req, res, next) => {
+export const authorized = async (req, res, next) => {
     if (res.locals.user) {
         next()
     } else {
-        res.redirect("/register")
+        res.redirect("/")
     }
 }

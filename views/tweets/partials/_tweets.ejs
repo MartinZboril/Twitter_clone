@@ -1,0 +1,10 @@
+<h3>Tweets</h3>
+<ul>
+    <% for (const tweet of tweets) { %>
+        <li>
+            <a href="/tweet/<%= tweet.id %>">
+                <%= tweet.content %> <%= tweet.user_id %>
+            </a>
+        </li>
+    <% } %>
+</ul>
