@@ -22,54 +22,54 @@ export const createWebSocketServer = (server) => {
 
 export const sendTweetListToAllConnections = async () => {
   const tweetList = await ejs.renderFile(
-      "views/tweets/partials/_tweets.ejs",
-      {
-        tweets: await getAllTweets(),
-      }
+    "views/tweets/partials/_tweets.ejs",
+    {
+      tweets: await getAllTweets(),
+    },
   )
 
   for (const connection of connections) {
     connection.send(
-        JSON.stringify({
-          type: "tweetList",
-          html: tweetList,
-        })
+      JSON.stringify({
+        type: "tweetList",
+        html: tweetList,
+      }),
     )
   }
 }
 
 export const sendTweetDetailToAllConnections = async (
-    id
+  id,
 ) => {
   const tweet = await getTweetById(id)
 
   const tweetDetail = await ejs.renderFile(
-      "views/tweets/partials/_tweet.ejs",
-      {
-        tweet,
-      }
+    "views/tweets/partials/_tweet.ejs",
+    {
+      tweet,
+    },
   )
 
   for (const connection of connections) {
     connection.send(
-        JSON.stringify({
-          type: "tweetDetail",
-          id: tweet.id,
-          html: tweetDetail,
-        })
+      JSON.stringify({
+        type: "tweetDetail",
+        id: tweet.id,
+        html: tweetDetail,
+      }),
     )
   }
 }
 
 export const sendTweetDeletedToAllConnections = async (
-    id
+  id,
 ) => {
   for (const connection of connections) {
     connection.send(
-        JSON.stringify({
-          type: "tweetDeleted",
-          id,
-        })
+      JSON.stringify({
+        type: "tweetDeleted",
+        id,
+      }),
     )
   }
 }
