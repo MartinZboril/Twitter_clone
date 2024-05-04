@@ -4,10 +4,14 @@ import {
   sendTweetDetailToAllConnections,
   sendTweetListToAllConnections,
 } from "../websockets.js"
-import { getTweetById } from "../db/tweets.js"
+import {
+  createTweet,
+  deleteTweet,
+  getTweetById,
+  updateTweet,
+} from "../db/tweets.js"
 import { authorized } from "../middlewares/authorized.js"
 import { tweetBelongsToCurrentUser } from "../middlewares/tweetBelongsToCurrentUser.js"
-import db from "../db.js"
 
 export const tweetsRouter = new Router()
 
@@ -30,12 +34,10 @@ tweetsRouter.post(
   "/add-tweet",
   authorized,
   async (req, res) => {
-    const tweet = {
-      content: req.body.content,
-      user_id: res.locals.user.id,
-    }
+    const content = req.body.content
+    const userId = res.locals.user.id
 
-    await db("tweets").insert(tweet)
+    await createTweet(content, userId)
 
     res.redirect("/")
   },
@@ -49,13 +51,7 @@ tweetsRouter.post(
     const tweet = await getTweetById(req.params.id)
     if (!tweet) return next()
 
-    const query = db("tweets").where("id", tweet.id)
-
-    if (req.body.content) {
-      query.update({ content: req.body.content })
-    }
-
-    await query
+    await updateTweet(tweet.id, req.body.content)
 
     await sendTweetListToAllConnections()
     await sendTweetDetailToAllConnections(tweet.id)
@@ -73,7 +69,7 @@ tweetsRouter.get(
 
     if (!tweet) return next()
 
-    await db("tweets").delete().where("id", tweet.id)
+    await deleteTweet(tweet.id)
 
     await sendTweetListToAllConnections()
     await sendTweetDeletedToAllConnections(tweet.id)
