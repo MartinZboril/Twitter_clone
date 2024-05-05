@@ -2,11 +2,30 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title"><%= user.name %></h5>
-                <h6 class="card-subtitle mb-2 text-muted"><%= user.email %></h6>
-                <% if (user) { %>
-                    <p class="card-text"><%= user.bio %></p>
-                <% } %>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="h5 mb-0">
+                        <%= displayedUser.name %>
+                    </div>
+                    <% if (user && displayedUser.id !== user.id) { %>
+                        <% if (!isFollowing) { %>
+                            <form method="post" action="/follow/<%= displayedUser.id %>" class="ms-auto">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-person-plus-fill"></i> Follow
+                                </button>
+                            </form>
+                        <% } else { %>
+                            <form method="post" action="/unfollow/<%= displayedUser.id %>" class="ms-auto">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-person-dash-fill"></i> Unfollow
+                                </button>
+                            </form>
+                        <% } %>
+                    <% } %>
+                </div>
+                <h6 class="card-subtitle mb-2 text-muted"><%= displayedUser.email %></h6>
+                <div class="mb-2 text-muted">
+                    <b><%= followees.length %></b> Following | <b><%= followers.length %></b> Followers
+                </div>
             </div>
         </div>
     </div>
@@ -16,11 +35,19 @@
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <button class="nav-link active" id="nav-tweets-tab" data-bs-toggle="tab" data-bs-target="#nav-tweets" type="button" role="tab" aria-controls="nav-tweets" aria-selected="true">Tweets</button>
                     <button class="nav-link" id="nav-likes-tab" data-bs-toggle="tab" data-bs-target="#nav-likes" type="button" role="tab" aria-controls="nav-likes" aria-selected="false">Likes</button>
+                    <button class="nav-link" id="nav-followers-tab" data-bs-toggle="tab" data-bs-target="#nav-followers" type="button" role="tab" aria-controls="nav-followers" aria-selected="false">Followers</button>
+                    <button class="nav-link" id="nav-following-tab" data-bs-toggle="tab" data-bs-target="#nav-following" type="button" role="tab" aria-controls="nav-following" aria-selected="false">Following</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-tweets" role="tabpanel" aria-labelledby="nav-tweets-tab">Tweets</div>
                 <div class="tab-pane fade" id="nav-likes" role="tabpanel" aria-labelledby="nav-likes-tab">Likes</div>
+                <div class="tab-pane fade" id="nav-followers" role="tabpanel" aria-labelledby="nav-followers-tab">
+                    <%- include('partials/_users-preview', { users: followers }) %>
+                </div>
+                <div class="tab-pane fade" id="nav-following" role="tabpanel" aria-labelledby="nav-following-tab">
+                    <%- include('partials/_users-preview', { users: followees }) %>
+                </div>
             </div>
         </div>
     </div>

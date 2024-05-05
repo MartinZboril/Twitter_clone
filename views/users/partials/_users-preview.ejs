@@ -1,0 +1,15 @@
+<ul class="list-group list-group-flush">
+    <% users.forEach(user => { %>
+        <li class="list-group-item d-flex align-items-start">
+            <img src="/user-profile.png" alt="<%= user.name %>" class="rounded-circle me-3" style="width: 50px; height: 50px;">
+            <div style="flex-grow: 1;">
+                <h6 class="mb-1" style="text-align: left;">
+                    <a href="/profile/<%= user.id %>" class="stretched-link"><%= user.name %></a>
+                </h6>
+                <% if (user.bio) { %>
+                    <small class="text-muted" style="display: block; text-align: left;"> <%= user.bio %></small> <!-- Ensured block display and left alignment -->
+                <% } %>
+            </div>
+        </li>
+    <% }); %>
+</ul>

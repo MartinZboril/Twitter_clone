@@ -1,4 +1,5 @@
 import User from "../models/User.js"
+import Follow from "../models/follow.js"
 
 export default class Users {
   async register(req, res) {
@@ -46,15 +47,26 @@ export default class Users {
   }
 
   async showProfile(req, res, next) {
-    const user = await User.query()
+    const currentUser = res.locals.user
+    const displayedUser = await User.query()
       .findById(req.params.id)
-      .withGraphFetched("[tweets, likes]")
+      .withGraphFetched(
+        "[followers, followees, tweets, likes]",
+      )
 
-    if (!user) return next()
+    if (!displayedUser) return next()
+
+    const isFollowing = await Follow.query().findOne({
+      follower_id: currentUser.id,
+      followee_id: displayedUser.id,
+    })
 
     res.render("users/profile", {
       title: "Profile",
-      user,
+      displayedUser,
+      isFollowing: !!isFollowing,
+      followers: displayedUser.followers,
+      followees: displayedUser.followees,
     })
   }
 
@@ -99,5 +111,35 @@ export default class Users {
         error: "Current password is incorrect.",
       })
     }
+  }
+
+  async followUser(req, res) {
+    const followeeId = parseInt(req.params.id)
+    const followerId = res.locals.user.id
+
+    const existingFollow = await Follow.query().findOne({
+      follower_id: followerId,
+      followee_id: followeeId,
+    })
+    if (!existingFollow) {
+      await Follow.query().insert({
+        follower_id: followerId,
+        followee_id: followeeId,
+      })
+      res.redirect(`/profile/${followeeId}`)
+    } else {
+      res.status(400).send("Already following")
+    }
+  }
+
+  async unfollowUser(req, res) {
+    const followeeId = parseInt(req.params.id)
+    const followerId = res.locals.user.id
+
+    await Follow.query().delete().where({
+      follower_id: followerId,
+      followee_id: followeeId,
+    })
+    res.redirect(`/profile/${followeeId}`)
   }
 }

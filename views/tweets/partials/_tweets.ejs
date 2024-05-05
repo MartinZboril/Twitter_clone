@@ -4,8 +4,8 @@
     <div class="card mb-3">
         <div class="card-body">
             <div class="d-flex align-items-center mb-2">
-                <a href="/profile/<%= user.id %>" class="text-white text-decoration-none"><img src="/user-profile.png" alt="User avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;"></a>
-                <strong class="me-auto"><a href="/profile/<%= user.id %>" class="text-white text-decoration-none"><%= tweet.author.name %></a></strong>
+                <a href="/profile/<%= tweet.author.id %>" class="text-white text-decoration-none"><img src="/user-profile.png" alt="User avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;"></a>
+                <strong class="me-auto"><a href="/profile/<%= tweet.author.id %>" class="text-white text-decoration-none"><%= tweet.author.name %></a></strong>
                 <small class="text-muted">X mins ago</small>
             </div>
             <a href="/tweet/<%= tweet.id %>" class="text-white text-decoration-none">

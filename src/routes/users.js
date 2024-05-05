@@ -59,3 +59,14 @@ usersRouter.post(
   authorized,
   userController.changePassword.bind(userController),
 )
+
+usersRouter.post(
+  "/follow/:id",
+  authorized,
+  userController.followUser.bind(userController),
+)
+usersRouter.post(
+  "/unfollow/:id",
+  authorized,
+  userController.unfollowUser.bind(userController),
+)

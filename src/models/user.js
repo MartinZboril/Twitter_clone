@@ -26,6 +26,30 @@ class User extends Model {
           to: "likes.user_id",
         },
       },
+      followers: {
+        relation: Model.ManyToManyRelation,
+        modelClass: User,
+        join: {
+          from: "users.id",
+          through: {
+            from: "follows.followee_id",
+            to: "follows.follower_id",
+          },
+          to: "users.id",
+        },
+      },
+      followees: {
+        relation: Model.ManyToManyRelation,
+        modelClass: User,
+        join: {
+          from: "users.id",
+          through: {
+            from: "follows.follower_id",
+            to: "follows.followee_id",
+          },
+          to: "users.id",
+        },
+      },
     }
   }
 
