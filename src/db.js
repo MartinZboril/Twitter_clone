@@ -1,8 +1,12 @@
-import knex from "knex"
-import knexfile from "../knexfile.js"
+import Knex from "knex"
+import { Model } from "objection"
+import knexConfig from "../knexfile.js"
 
-const db = knex(
-  knexfile[process.env.NODE_ENV || "development"],
-)
+const environment = process.env.NODE_ENV || "development"
+const config = knexConfig[environment]
+
+const db = Knex(config)
+
+Model.knex(db)
 
 export default db

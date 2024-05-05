@@ -1,13 +1,13 @@
+import db from "./db.js"
 import express from "express"
 import cookieParser from "cookie-parser"
 import expressLayouts from "express-ejs-layouts"
 import { usersRouter } from "./routes/users.js"
 import { loadUser } from "./middlewares/loadUser.js"
 import { tweetsRouter } from "./routes/tweets.js"
-import {
-  getAllTweets,
-  hasUserLikedTweet,
-} from "./db/tweets.js"
+import * as home from "./controllers/home.js"
+import Users from "./controllers/users.js"
+import Home from "./controllers/home.js"
 
 export const app = express()
 
@@ -21,22 +21,8 @@ app.use(cookieParser())
 
 app.use(loadUser)
 
-app.get("/", async (req, res) => {
-  const tweets = await getAllTweets()
-
-  for (let tweet of tweets) {
-    tweet.userLiked = await hasUserLikedTweet(
-      tweet.id,
-      res.locals.user.id,
-    )
-  }
-
-  // TODO: change layout if user is not authorized to guest layout
-  res.render("index", {
-    title: "Home",
-    tweets,
-  })
-})
+const homeController = new Home()
+app.get("/", homeController.index.bind(homeController))
 
 app.use(usersRouter)
 app.use(tweetsRouter)

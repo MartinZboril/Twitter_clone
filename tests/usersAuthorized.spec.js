@@ -2,7 +2,7 @@ import test from "ava"
 import supertest from "supertest"
 import { app } from "../src/app.js"
 import db from "../src/db.js"
-import { getUser } from "../src/db/users.js"
+import User from "../src/models/user.js"
 
 let agent
 
@@ -60,7 +60,9 @@ test.serial(
       bio: "bio",
     })
 
-    const updatedUser = await getUser("email", "password")
+    const updatedUser = await User.query().findOne({
+      email: "email",
+    })
 
     t.deepEqual(updatedUser.name, "updated name")
   },
@@ -93,9 +95,9 @@ test.serial(
 )
 
 test.serial(
-  "POST /change password will update user password and user can signed with it",
+  "POST /change password will update user password and user can sign in with it",
   async (t) => {
-    const response = await agent
+    await agent
       .post("/change-password")
       .type("form")
       .send({
@@ -110,7 +112,10 @@ test.serial(
     const responseLogin = await supertest(app)
       .post("/login")
       .type("form")
-      .send({ email: "email", password: "password" })
+      .send({
+        email: "email",
+        password: "new password",
+      })
 
     const cookies = responseLogin.headers["set-cookie"]
     const tokenCookie = cookies.find((cookie) =>

@@ -1,10 +1,15 @@
-import { getUserByToken } from "../db/users.js"
+import User from "../models/user.js"
 
 export const loadUser = async (req, res, next) => {
   const token = req.cookies.token
 
   if (token) {
-    res.locals.user = await getUserByToken(token)
+    try {
+      res.locals.user = await User.findByToken(token)
+    } catch (error) {
+      console.error("Error fetching user by token:", error)
+      res.locals.user = null
+    }
   } else {
     res.locals.user = null
   }

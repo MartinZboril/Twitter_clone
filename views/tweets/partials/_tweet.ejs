@@ -1,12 +1,7 @@
 <h1><%= tweet.content %></h1>
+<p><%= tweet.author.name %> | (<%= tweet.likesCount %>)</p>
 
-<hr>
-
-<a href="/remove-tweet/<%= tweet.id %>">
-    remove
-</a>
-&nbsp;
-<% if (!tweet.userLiked) { %>
+<% if (user && !tweet.userHasLiked(user.id)) { %>
     <form method="POST" action="/like-tweet/<%= tweet.id %>">
         <button type="submit">Like</button>
     </form>
@@ -15,3 +10,7 @@
         <button type="submit">Unlike</button>
     </form>
 <% } %>
+
+<a href="/remove-tweet/<%= tweet.id %>">
+    remove
+</a>

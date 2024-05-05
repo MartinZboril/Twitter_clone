@@ -3,10 +3,10 @@
     <% for (const tweet of tweets) { %>
         <li>
             <a href="/tweet/<%= tweet.id %>">
-                <%= tweet.content %> <%= tweet.user_id %> (<%= tweet.likes %>)
+                <%= tweet.content %> <%= tweet.author.name %> (<%= tweet.likesCount %>)
             </a>
             &nbsp;
-            <% if (!tweet.userLiked) { %>
+            <% if (!tweet.userHasLiked(user.id)) { %>
                 <form method="POST" action="/like-tweet/<%= tweet.id %>">
                     <button type="submit">Like</button>
                 </form>

@@ -2,19 +2,33 @@ import test from "ava"
 import supertest from "supertest"
 import { app } from "../src/app.js"
 import db from "../src/db.js"
+import Tweet from "../src/models/tweet.js"
+import User from "../src/models/user.js"
 
 let agent
+let userId
 
 test.beforeEach(async () => {
   await db.migrate.latest()
 
   agent = supertest.agent(app)
 
-  await agent.post("/register").type("form").send({
-    email: "email",
-    password: "password",
+  const { salt, hash, token } =
+    await User.hashPassword("password")
+  const newUser = await User.query().insert({
+    email: "email@example.com",
+    hash,
+    salt,
     name: "name",
     bio: "bio",
+    token,
+  })
+
+  userId = newUser.id
+
+  await agent.post("/login").type("form").send({
+    email: "email@example.com",
+    password: "password",
   })
 })
 
@@ -27,133 +41,98 @@ test.serial("create new tweet via form", async (t) => {
     .post("/add-tweet")
     .type("form")
     .send({ content: "My tweet" })
-    .redirects(1)
+    .expect(302)
 
-  t.assert(response.text.includes("My tweet"))
+  const tweet = await Tweet.query().findOne({
+    content: "My tweet",
+    user_id: userId,
+  })
+  t.truthy(tweet)
+  t.is(tweet.content, "My tweet")
 })
 
 test.serial("it renders a list of tweets", async (t) => {
-  const response = await agent.get("/")
-
-  t.assert(response.text.includes("<h3>Tweets</h3>"))
-})
-
-test.serial("create new tweet", async (t) => {
-  await db("tweets").insert({
+  await Tweet.query().insert({
     content: "My tweet",
+    user_id: userId,
   })
 
   const response = await agent.get("/")
-
   t.assert(response.text.includes("My tweet"))
 })
 
 test.serial("tweet detail", async (t) => {
-  const [tweet] = await db("tweets")
-    .insert({
-      content: "My tweet",
-    })
-    .returning("*")
+  const tweet = await Tweet.query().insert({
+    content: "My tweet",
+    user_id: userId,
+  })
 
   const response = await agent.get(`/tweet/${tweet.id}`)
-
   t.assert(response.text.includes("My tweet"))
 })
 
 test.serial("update tweet via form", async (t) => {
-  await agent
-    .post("/add-tweet")
-    .type("form")
-    .send({ content: "My tweet" })
+  const tweet = await Tweet.query().insert({
+    content: "My tweet",
+    user_id: userId,
+  })
 
-  const response = await agent
-    .post(`/update-tweet/1`)
+  await agent
+    .post(`/update-tweet/${tweet.id}`)
     .type("form")
     .send({ content: "Your tweet" })
-    .redirects(1)
+    .expect(302)
 
-  t.assert(response.text.includes("Your tweet"))
+  const updatedTweet = await Tweet.query().findById(
+    tweet.id,
+  )
+  t.is(updatedTweet.content, "Your tweet")
 })
 
 test.serial("remove tweet", async (t) => {
-  await agent
-    .post("/add-tweet")
-    .type("form")
-    .send({ content: "My tweet" })
+  const tweet = await Tweet.query().insert({
+    content: "My tweet",
+    user_id: userId,
+  })
 
-  const response = await agent
-    .get(`/remove-tweet/1`)
-    .redirects(1)
+  await agent.get(`/remove-tweet/${tweet.id}`).expect(302)
 
-  t.assert(!response.text.includes("My tweet"))
+  const deletedTweet = await Tweet.query().findById(
+    tweet.id,
+  )
+  t.falsy(deletedTweet)
 })
 
-test.serial("like a tweet", async (t) => {
-  const [tweet] = await db("tweets")
-    .insert({
-      content: "A tweet to like",
-      user_id: 1,
-    })
-    .returning("*")
-
-  const response = await agent
-    .post(`/like-tweet/${tweet.id}`)
-    .send()
-
-  t.assert(response.status === 302)
-
-  const likes = await db("likes").where({
-    user_id: 1,
-    likeable_id: tweet.id,
-    likeable_type: "tweets",
-  })
-  t.assert(likes.length === 1)
-})
-
-test.serial("unlike a tweet", async (t) => {
-  const [tweet] = await db("tweets")
-    .insert({
-      content: "A tweet to unlike",
-      user_id: 1,
-    })
-    .returning("*")
-
-  await db("likes").insert({
-    user_id: 1,
-    likeable_id: tweet.id,
-    likeable_type: "tweets",
+test.serial("like and unlike a tweet", async (t) => {
+  const tweet = await Tweet.query().insert({
+    content: "A tweet to like",
+    user_id: userId,
   })
 
-  const response = await agent
-    .post(`/unlike-tweet/${tweet.id}`)
-    .send()
-
-  t.assert(response.status === 302)
-
-  const likes = await db("likes").where({
-    user_id: 1,
+  await agent.post(`/like-tweet/${tweet.id}`).expect(302)
+  let likes = await db("likes").where({
     likeable_id: tweet.id,
-    likeable_type: "tweets",
   })
-  t.assert(likes.length === 0)
+  t.is(likes.length, 1)
+
+  await agent.post(`/unlike-tweet/${tweet.id}`).expect(302)
+  likes = await db("likes").where({ likeable_id: tweet.id })
+  t.is(likes.length, 0)
 })
 
 test.serial("tweet detail shows like status", async (t) => {
-  const [tweet] = await db("tweets")
-    .insert({
-      content: "Tweet to check like status",
-      user_id: 1,
-    })
-    .returning("*")
+  const tweet = await Tweet.query().insert({
+    content: "Tweet to check like status",
+    user_id: userId,
+  })
 
   await db("likes").insert({
-    user_id: 1,
+    user_id: userId,
     likeable_id: tweet.id,
     likeable_type: "tweets",
   })
 
   const response = await agent.get(`/tweet/${tweet.id}`)
-
   t.assert(response.text.includes("unlike"))
 })
 

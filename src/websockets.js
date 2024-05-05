@@ -1,6 +1,7 @@
 import { WebSocketServer } from "ws"
 import ejs from "ejs"
-import { getAllTweets, getTweetById } from "./db/tweets.js"
+import Tweet from "./models/tweet.js"
+import User from "./models/user.js"
 
 const connections = new Set()
 
@@ -20,12 +21,18 @@ export const createWebSocketServer = (server) => {
   })
 }
 
-export const sendTweetListToAllConnections = async () => {
+export const sendTweetListToAllConnections = async (
+  userId,
+) => {
+  const tweets = await Tweet.query().withGraphFetched(
+    "[author, likes]",
+  )
+
+  const user = await User.query().findById(userId)
+
   const tweetList = await ejs.renderFile(
     "views/tweets/partials/_tweets.ejs",
-    {
-      tweets: await getAllTweets(),
-    },
+    { tweets, user },
   )
 
   for (const connection of connections) {
@@ -40,14 +47,19 @@ export const sendTweetListToAllConnections = async () => {
 
 export const sendTweetDetailToAllConnections = async (
   id,
+  userId,
 ) => {
-  const tweet = await getTweetById(id)
+  const tweet = await Tweet.query()
+    .findById(id)
+    .withGraphFetched("[author, likes]")
+
+  if (!tweet) return
+
+  const user = await User.query().findById(userId)
 
   const tweetDetail = await ejs.renderFile(
     "views/tweets/partials/_tweet.ejs",
-    {
-      tweet,
-    },
+    { tweet, user },
   )
 
   for (const connection of connections) {

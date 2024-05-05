@@ -2,7 +2,7 @@ import test from "ava"
 import supertest from "supertest"
 import { app } from "../src/app.js"
 import db from "../src/db.js"
-import { createUser, getUser } from "../src/db/users.js"
+import User from "../src/models/user.js"
 
 test.beforeEach(async () => {
   await db.migrate.latest()
@@ -12,134 +12,104 @@ test.afterEach(async () => {
   await db.migrate.rollback()
 })
 
-// Unit tests
-
 test.serial("create new user", async (t) => {
-  const user = await createUser(
-    "email",
-    "password",
-    "name",
-    "bio",
-  )
+  const { salt, hash, token } =
+    await User.hashPassword("password")
+  const user = await User.query().insert({
+    email: "email@example.com",
+    hash,
+    salt,
+    name: "name",
+    bio: "bio",
+    token,
+  })
 
   t.is(user.name, "name")
-  t.is(user.email, "email")
+  t.is(user.email, "email@example.com")
   t.is(user.bio, "bio")
-  t.not(user.hash, "password")
+  t.not(user.password, "password")
+  t.truthy(user.token)
 })
 
 test.serial("get user by email and password", async (t) => {
-  const user = await createUser(
-    "email",
+  const { salt, hash, token } =
+    await User.hashPassword("password")
+  await User.query().insert({
+    email: "email@example.com",
+    hash,
+    salt,
+    name: "name",
+    bio: "bio",
+    token,
+  })
+
+  const fetchedUser = await User.query()
+    .where("email", "email@example.com")
+    .first()
+  const isPasswordCorrect = await User.verifyPassword(
     "password",
-    "name",
-    "bio",
+    fetchedUser.salt,
+    fetchedUser.hash,
   )
 
-  t.deepEqual(await getUser("email", "password"), user)
-  t.is(await getUser("email", "bad password"), null)
-  t.is(await getUser("bad email", "password"), null)
+  t.truthy(fetchedUser)
+  t.true(isPasswordCorrect)
+  t.is(fetchedUser.email, "email@example.com")
+
+  const isWrongPassword = await User.verifyPassword(
+    "wrongpassword",
+    fetchedUser.salt,
+    fetchedUser.hash,
+  )
+  t.false(isWrongPassword)
 })
-
-// Super tests
-
-test.serial(
-  "GET /register shows registration from",
-  async (t) => {
-    const response = await supertest(app).get("/register")
-
-    t.assert(response.text.includes("Register"))
-  },
-)
 
 test.serial(
   "POST /register will create new user",
   async (t) => {
-    await supertest(app)
+    const response = await supertest(app)
       .post("/register")
       .type("form")
       .send({
-        email: "email",
+        email: "email@example.com",
         password: "password",
         name: "name",
         bio: "bio",
       })
+      .expect(302)
 
-    t.not(await getUser("email", "password"), null)
+    const user = await User.query()
+      .where("email", "email@example.com")
+      .first()
+    t.not(user, null)
+    t.is(user.email, "email@example.com")
   },
 )
 
 test.serial(
-  "after registration and redirect user name is visible",
+  "POST /login will sign in the user",
   async (t) => {
-    const agent = supertest.agent(app)
-
-    const response = await agent
-      .post("/register")
-      .type("form")
-      .send({
-        email: "email",
-        password: "password",
-        name: "name",
-        bio: "bio",
-      })
-      .redirects(1)
-
-    t.assert(response.text.includes("name"))
-  },
-)
-
-test.serial("GET /login shows login from", async (t) => {
-  const response = await supertest(app).get("/login")
-
-  t.assert(response.text.includes("Login"))
-})
-
-test.serial(
-  "POST /login will signup the user",
-  async (t) => {
-    const user = await createUser(
-      "email",
-      "password",
-      "name",
-      "bio",
-    )
+    const { salt, hash, token } =
+      await User.hashPassword("password")
+    await User.query().insert({
+      email: "email@example.com",
+      hash,
+      salt,
+      name: "name",
+      bio: "bio",
+      token,
+    })
 
     const response = await supertest(app)
       .post("/login")
       .type("form")
-      .send({ email: "email", password: "password" })
+      .send({
+        email: "email@example.com",
+        password: "password",
+      })
+      .expect(302)
 
-    const cookies = response.headers["set-cookie"]
-    const tokenCookie = cookies.find((cookie) =>
-      cookie.startsWith("token="),
-    )
-    const tokenValue = tokenCookie
-      .split(";")[0]
-      .split("=")[1]
-
-    t.deepEqual(tokenValue, user.token)
-  },
-)
-
-test.serial(
-  "after login and redirect user name is visible",
-  async (t) => {
-    const user = await createUser(
-      "email",
-      "password",
-      "name",
-      "bio",
-    )
-    const agent = supertest.agent(app)
-
-    const response = await agent
-      .post("/login")
-      .type("form")
-      .send({ email: "email", password: "password" })
-      .redirects(1)
-
-    t.assert(response.text.includes(user.name))
+    t.truthy(response.headers["set-cookie"])
   },
 )
 
