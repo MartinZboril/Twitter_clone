@@ -8,6 +8,22 @@ class Tweet extends Model {
     return "tweets"
   }
 
+  static get jsonSchema() {
+    return {
+      type: "object",
+      required: ["user_id"],
+      properties: {
+        id: { type: "integer" },
+        user_id: { type: "integer" },
+        content: {
+          type: ["string", "null"],
+          maxLength: 280,
+        },
+        retweet_id: { type: ["integer", "null"] },
+      },
+    }
+  }
+
   static get virtualAttributes() {
     return ["likesCount"]
   }
@@ -39,6 +55,14 @@ class Tweet extends Model {
           from: "tweets.id",
           to: "comments.tweet_id",
         },
+      },
+      retweets: {
+        relation: Model.HasManyRelation,
+        modelClass: Tweet,
+        join: {
+          from: 'tweets.id',
+          to: 'tweets.retweet_id'
+        }
       },
     }
   }

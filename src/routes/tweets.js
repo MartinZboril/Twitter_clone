@@ -43,7 +43,13 @@ tweetsRouter.post(
 )
 
 tweetsRouter.post(
-  "/tweet/:tweetId/comment",
+  "/tweet/:id/comment",
   authorized,
   tweetsController.addComment.bind(tweetsController),
+)
+
+tweetsRouter.post(
+  "/retweet/:id",
+  authorized,
+  tweetsController.retweet.bind(tweetsController),
 )

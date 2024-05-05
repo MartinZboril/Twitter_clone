@@ -11,7 +11,7 @@ export default class Tweets {
   async show(req, res, next) {
     const tweet = await Tweet.query()
       .findById(req.params.id)
-      .withGraphFetched("[author, likes, comments.author]")
+      .withGraphFetched("[author, likes, comments.author, retweets]")
 
     if (!tweet) return next()
 
@@ -106,5 +106,43 @@ export default class Tweets {
     })
 
     res.redirect(`/tweet/${tweetId}`)
+  }
+
+  async retweet(req, res, next) {
+    const tweetId = parseInt(req.params.id)
+    const userId = res.locals.user.id
+
+    try {
+      const originalTweet =
+        await Tweet.query().findById(tweetId)
+      if (!originalTweet) {
+        return res
+          .status(404)
+          .send("Original tweet not found")
+      }
+
+      const existingRetweet = await Tweet.query()
+        .where({
+          user_id: userId,
+          retweet_id: tweetId,
+        })
+        .first()
+
+      if (existingRetweet) {
+        return res
+          .status(400)
+          .send("You have already retweeted this tweet")
+      }
+
+      const retweet = await Tweet.query().insert({
+        user_id: userId,
+        retweet_id: tweetId,
+        content: `Retweeted: ${originalTweet.content}`,
+      })
+
+      res.redirect(`/tweet/${retweet.id}`)
+    } catch (error) {
+      next(error)
+    }
   }
 }

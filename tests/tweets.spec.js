@@ -136,6 +136,4 @@ test.serial("tweet detail shows like status", async (t) => {
   t.assert(response.text.includes("unlike"))
 })
 
-// TODO: comment tweet
-
 // TODO: retweet tweet
