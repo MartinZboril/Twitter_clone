@@ -35,7 +35,7 @@ export default class Tweets {
     res.redirect("/")
   }
 
-  async update(req, res) {
+  async update(req, res, next) {
     const tweet = await Tweet.query().patchAndFetchById(
       req.params.id,
       { content: req.body.content },

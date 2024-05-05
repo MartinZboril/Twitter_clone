@@ -1,20 +1,28 @@
-<h3>Tweets</h3>
-<ul>
-    <% for (const tweet of tweets) { %>
-        <li>
-            <a href="/tweet/<%= tweet.id %>">
-                <%= tweet.content %> <%= tweet.author.name %> (<%= tweet.likesCount %>)
+<h4>Tweets of your followers</h4>
+
+<% for (const tweet of tweets) { %>
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+                <img src="x.jpg" alt="User avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                <strong class="me-auto"><%= tweet.author.name %></strong>
+                <small class="text-muted">X mins ago</small>
+            </div>
+            <a href="/tweet/<%= tweet.id %>" class="text-white text-decoration-none">
+                <p class="card-text"><%= tweet.content %></p>
             </a>
-            &nbsp;
-            <% if (!tweet.userHasLiked(user.id)) { %>
-                <form method="POST" action="/like-tweet/<%= tweet.id %>">
-                    <button type="submit">Like</button>
-                </form>
-            <% } else { %>
-                <form method="POST" action="/unlike-tweet/<%= tweet.id %>">
-                    <button type="submit">Unlike</button>
-                </form>
-            <% } %>
-        </li>
-    <% } %>
-</ul>
+            <div class="d-flex align-items-center">
+                <% if (!tweet.userHasLiked(user.id)) { %>
+                    <form method="POST" action="/like-tweet/<%= tweet.id %>" class="me-2">
+                        <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-heart"></i></button>
+                    </form>
+                <% } else { %>
+                    <form method="POST" action="/unlike-tweet/<%= tweet.id %>" class="me-2">
+                        <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-heart-fill"></i></button>
+                    </form>
+                <% } %>
+                <span class="text-muted"><%= tweet.likesCount %> like(s)</span>
+            </div>
+        </div>
+    </div>
+<% } %>

@@ -1,8 +1,24 @@
-Edit profile
+<div class="card">
+    <div class="card-header">Edit profile</div>
+    <div class="card-body">
+        <form method="post" action="/edit-profile">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" value="<%= user.email %>">
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" value="<%= user.name %>">
+            </div>
+            <div class="mb-3">
+                <label for="bio">Bio:</label>
+                <textarea class="form-control" rows="5" id="bio" name="bio"><%= user.bio %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Edit</button>
+        </form>
+    </div>
+</div>
 
-<form method="post" action="/edit-profile">
-    <input name="email" placeholder="Email" value="<%= user.email %>">
-    <input name="name" placeholder="Name" value="<%= user.name %>">
-    <input name="bio" placeholder="Bio" value="<%= user.bio %>">
-    <button type="submit">Edit</button>
-</form>
+<a href="/profile" class="">
+    &lt; Back to profile
+</a>

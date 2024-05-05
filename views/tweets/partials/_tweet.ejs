@@ -1,16 +1,31 @@
-<h1><%= tweet.content %></h1>
-<p><%= tweet.author.name %> | (<%= tweet.likesCount %>)</p>
+<div class="display-4"><%= tweet.content %></div>
+<p class="lead text-muted"><%= tweet.author.name %> | Likes: (<%= tweet.likesCount %>)</p>
 
-<% if (user && !tweet.userHasLiked(user.id)) { %>
-    <form method="POST" action="/like-tweet/<%= tweet.id %>">
-        <button type="submit">Like</button>
-    </form>
-<% } else { %>
-    <form method="POST" action="/unlike-tweet/<%= tweet.id %>">
-        <button type="submit">Unlike</button>
+<div class="d-flex align-items-center gap-2 mb-3">
+    <% if (!tweet.userHasLiked(user.id)) { %>
+        <form method="POST" action="/like-tweet/<%= tweet.id %>">
+            <button type="submit" class="btn btn-primary">Like <i class="bi bi-heart"></i></button>
+        </form>
+    <% } else { %>
+        <form method="POST" action="/unlike-tweet/<%= tweet.id %>">
+            <button type="submit" class="btn btn-secondary">Unlike <i class="bi bi-heart-fill"></i></button>
+        </form>
+    <% } %>
+    <% if (tweet.user_id === user.id) { %>
+        <a href="/remove-tweet/<%= tweet.id %>" class="btn btn-danger">Remove <i class="bi bi-trash"></i></a>
+    <% } %>
+</div>
+<p class="mb-0">Published: <span class="text-muted">Date here</span></p>
+<p>Retweets: <span class="text-muted">Number</span> | Comments: <span class="text-muted">Number</span></p>
+
+<% if (tweet.user_id === user.id) { %>
+    <hr>
+    <form method="post" action="/update-tweet/<%= tweet.id %>" class="mb-4">
+        <h2>Update tweet</h2>
+        <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <input type="text" class="form-control" id="content" name="content" placeholder="Tweet" value="<%= tweet.content %>">
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
     </form>
 <% } %>
-
-<a href="/remove-tweet/<%= tweet.id %>">
-    remove
-</a>

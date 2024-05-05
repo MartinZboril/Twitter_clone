@@ -1,10 +1,33 @@
 <header>
-    <% if (user) { %>
-        <a href="/">Home</a>
-        <a href="/profile"><%= user.name %></a>
-        <a href="/logout">Logout</a>
-    <% } else { %>
-        <a href="/register">Register</a>
-        <a href="/login">Login</a>
-    <% } %>
+        <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+                <div class="container-fluid">
+                        <a class="navbar-brand" href="/">Twitter</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                                <% if (user) { %>
+                                        <div class="navbar-nav">
+                                                <a class="nav-link" aria-current="page" href="/">Home</a>
+                                        </div>
+                                        <div class="navbar-nav ms-auto">
+                                                <li class="nav-item dropdown">
+                                                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false"><%= user.name%></a>
+                                                        <ul class="dropdown-menu">
+                                                                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                                                                <li><a class="dropdown-item" href="/edit-profile">Edit profile</a></li>
+                                                                <li><a class="dropdown-item" href="/change-password">Change password</a></li>
+                                                        </ul>
+                                                </li>
+                                                <a class="nav-link" href="/logout">Logout</a>
+                                        </div>
+                                <% } else { %>
+                                        <div class="navbar-nav">
+                                                <a class="nav-link" href="/register">Register</a>
+                                                <a class="nav-link" href="/login">Login</a>
+                                        </div>
+                                <% } %>
+                        </div>
+                </div>
+        </nav>
 </header>
