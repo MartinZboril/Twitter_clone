@@ -1,6 +1,7 @@
 import { Model } from "objection"
 import User from "./user.js"
 import Like from "./like.js"
+import Comment from "./comment.js"
 
 class Tweet extends Model {
   static get tableName() {
@@ -29,6 +30,14 @@ class Tweet extends Model {
           to: "likes.likeable_id",
           filter: (builder) =>
             builder.where("likes.likeable_type", "tweet"),
+        },
+      },
+      comments: {
+        relation: Model.HasManyRelation,
+        modelClass: Comment,
+        join: {
+          from: "tweets.id",
+          to: "comments.tweet_id",
         },
       },
     }

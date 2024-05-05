@@ -1,4 +1,5 @@
-import Tweet from "../models/Tweet.js"
+import Tweet from "../models/tweet.js"
+import Comment from "../models/comment.js"
 import {
   sendTweetDeletedToAllConnections,
   sendTweetDetailToAllConnections,
@@ -10,11 +11,9 @@ export default class Tweets {
   async show(req, res, next) {
     const tweet = await Tweet.query()
       .findById(req.params.id)
-      .withGraphFetched("[author, likes]")
+      .withGraphFetched("[author, likes, comments.author]")
 
     if (!tweet) return next()
-
-    tweet.userLiked = false
 
     res.render("tweets/tweet", {
       title: "Tweet",
@@ -93,5 +92,19 @@ export default class Tweets {
     })
 
     res.redirect("back")
+  }
+
+  async addComment(req, res) {
+    const content = req.body.content
+    const tweetId = req.params.id
+    const userId = res.locals.user.id
+
+    await Comment.query().insert({
+      tweet_id: tweetId,
+      user_id: userId,
+      content,
+    })
+
+    res.redirect(`/tweet/${tweetId}`)
   }
 }

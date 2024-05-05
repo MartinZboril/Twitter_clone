@@ -41,3 +41,9 @@ tweetsRouter.post(
   authorized,
   tweetsController.unlike.bind(tweetsController),
 )
+
+tweetsRouter.post(
+  "/tweet/:tweetId/comment",
+  authorized,
+  tweetsController.addComment.bind(tweetsController),
+)

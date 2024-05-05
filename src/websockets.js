@@ -51,7 +51,7 @@ export const sendTweetDetailToAllConnections = async (
 ) => {
   const tweet = await Tweet.query()
     .findById(id)
-    .withGraphFetched("[author, likes]")
+    .withGraphFetched("[author, likes, comments.author]")
 
   if (!tweet) return
 

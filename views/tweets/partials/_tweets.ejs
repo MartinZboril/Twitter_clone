@@ -18,7 +18,7 @@
                     </form>
                 <% } else { %>
                     <form method="POST" action="/unlike-tweet/<%= tweet.id %>" class="me-2">
-                        <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-heart-fill"></i></button>
+                        <button type="submit" class="btn btn-sm btn-secondary"><i class="bi bi-heart-fill"></i></button>
                     </form>
                 <% } %>
                 <span class="text-muted"><%= tweet.likesCount %> like(s)</span>
