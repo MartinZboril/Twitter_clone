@@ -29,8 +29,10 @@ usersRouter.get(
   userController.logout.bind(userController),
 )
 
-usersRouter.get("/profile", authorized, (req, res) =>
-  res.render("users/profile", { title: "Profile" }),
+usersRouter.get(
+  "/profile/:id",
+  authorized,
+  userController.showProfile.bind(userController),
 )
 
 usersRouter.get("/edit-profile", authorized, (req, res) =>

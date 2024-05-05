@@ -1,5 +1,5 @@
 <div class="display-4"><%= tweet.content %></div>
-<p class="lead text-muted"><%= tweet.author.name %> | Likes: (<%= tweet.likesCount %>)</p>
+<p class="lead text-muted"><img src="/user-profile.png" alt="User avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;"> <%= tweet.author.name %> | Likes: (<%= tweet.likesCount %>)</p>
 
 <div class="d-flex align-items-center gap-2 mb-3">
     <% if (!tweet.userHasLiked(user.id)) { %>

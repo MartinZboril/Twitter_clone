@@ -45,6 +45,19 @@ export default class Users {
     res.redirect("/")
   }
 
+  async showProfile(req, res, next) {
+    const user = await User.query()
+      .findById(req.params.id)
+      .withGraphFetched("[tweets, likes]")
+
+    if (!user) return next()
+
+    res.render("users/profile", {
+      title: "Profile",
+      user,
+    })
+  }
+
   async updateProfile(req, res) {
     const { email, name, bio } = req.body
 
@@ -56,7 +69,7 @@ export default class Users {
         bio,
       },
     )
-    res.redirect("/profile")
+    res.redirect(`/profile/${user.id}`)
   }
 
   async changePassword(req, res) {
@@ -79,7 +92,7 @@ export default class Users {
     ) {
       await User.updatePassword(newPassword)
       res.cookie("token", user.token)
-      res.redirect("/profile")
+      res.redirect(`/profile/${user.id}`)
     } else {
       res.render("users/change-password", {
         title: "Change password",
