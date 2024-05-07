@@ -11,7 +11,9 @@ export default class Tweets {
   async show(req, res, next) {
     const tweet = await Tweet.query()
       .findById(req.params.id)
-      .withGraphFetched("[author, likes, comments.author, retweets]")
+      .withGraphFetched(
+        "[author, likes, comments.author, retweets]",
+      )
 
     if (!tweet) return next()
 

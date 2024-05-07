@@ -22,7 +22,8 @@
                         <% } %>
                     <% } %>
                 </div>
-                <h6 class="card-subtitle mb-2 text-muted"><%= displayedUser.email %></h6>
+                <h6 class="card-subtitle text-muted"><%= displayedUser.email %></h6>
+                <div class="mb-2 small text-muted">Joined <%= displayedUser.joinedOn %></div>
                 <div class="mb-2 text-muted">
                     <b><%= followees.length %></b> Following | <b><%= followers.length %></b> Followers
                 </div>

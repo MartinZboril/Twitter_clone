@@ -24,7 +24,7 @@
         <a href="/remove-tweet/<%= tweet.id %>" class="btn btn-danger">Remove <i class="bi bi-trash"></i></a>
     <% } %>
 </div>
-<p class="mb-0">Published: <span class="text-muted">Date here</span></p>
+<p class="mb-0">Posted on: <span class="text-muted"><%= tweet.postedOn %></span></p>
 <p>Retweets: <span class="text-muted">Number</span> | Comments: <span class="text-muted"><%= tweet.comments.length %></span></p>
 
 <% if (tweet.user_id === user.id) { %>

@@ -7,7 +7,7 @@
             <li class="list-group-item">
                 <a href="/profile/<%= comment.author.id %>" class="text-white text-decoration-none"><img src="/user-profile.png" alt="User avatar" class="rounded-circle" style="width: 40px; height: 40px;"></a>
                 <strong class="me-auto"><a href="/profile/<%= comment.author.id %>" class="text-white text-decoration-none"><%= comment.author.name %></a></strong>: <%= comment.content %>
-                <small class="text-muted float-end">Posted on <%= new Date(comment.created_at).toLocaleDateString() %></small>
+                <small class="text-muted float-end"><%= comment.postedOn %></small>
             </li>
         <% }); %>
     </ul>

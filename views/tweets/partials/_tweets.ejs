@@ -6,7 +6,7 @@
             <div class="d-flex align-items-center mb-2">
                 <a href="/profile/<%= tweet.author.id %>" class="text-white text-decoration-none"><img src="/user-profile.png" alt="User avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;"></a>
                 <strong class="me-auto"><a href="/profile/<%= tweet.author.id %>" class="text-white text-decoration-none"><%= tweet.author.name %></a></strong>
-                <small class="text-muted">X mins ago</small>
+                <small class="text-muted"><%= tweet.postedOn %></small>
             </div>
             <a href="/tweet/<%= tweet.id %>" class="text-white text-decoration-none">
                 <p class="card-text"><%= tweet.content %></p>

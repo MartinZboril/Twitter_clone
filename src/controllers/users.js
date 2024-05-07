@@ -15,7 +15,7 @@ export default class Users {
       token,
     })
     res.cookie("token", user.token)
-    res.redirect("/profile")
+    res.redirect("/")
   }
 
   async login(req, res) {
@@ -38,7 +38,7 @@ export default class Users {
       return
     }
     res.cookie("token", user.token)
-    res.redirect("/profile")
+    res.redirect("/")
   }
 
   async logout(req, res) {

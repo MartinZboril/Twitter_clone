@@ -5,8 +5,6 @@ import expressLayouts from "express-ejs-layouts"
 import { usersRouter } from "./routes/users.js"
 import { loadUser } from "./middlewares/loadUser.js"
 import { tweetsRouter } from "./routes/tweets.js"
-import * as home from "./controllers/home.js"
-import Users from "./controllers/users.js"
 import Home from "./controllers/home.js"
 
 export const app = express()

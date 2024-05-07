@@ -1,10 +1,15 @@
 import { Model } from "objection"
 import Tweet from "./tweet.js"
 import User from "./user.js"
+import moment from "moment/moment.js"
 
 class Comment extends Model {
   static get tableName() {
     return "comments"
+  }
+
+  static get virtualAttributes() {
+    return ["postedOn"]
   }
 
   static get relationMappings() {
@@ -26,6 +31,10 @@ class Comment extends Model {
         },
       },
     }
+  }
+
+  get postedOn() {
+    return moment(this.created_at).fromNow()
   }
 }
 

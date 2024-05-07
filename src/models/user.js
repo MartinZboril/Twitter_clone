@@ -1,4 +1,5 @@
 import { Model } from "objection"
+import moment from "moment"
 import Tweet from "./tweet.js"
 import Like from "./like.js"
 import crypto from "crypto"
@@ -6,6 +7,10 @@ import crypto from "crypto"
 class User extends Model {
   static get tableName() {
     return "users"
+  }
+
+  static get virtualAttributes() {
+    return ["joinedOn"]
   }
 
   static get relationMappings() {
@@ -51,6 +56,10 @@ class User extends Model {
         },
       },
     }
+  }
+
+  get joinedOn() {
+    return moment(this.created_at).format("MMMM YYYY")
   }
 
   static hashPassword(password) {

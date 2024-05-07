@@ -1,4 +1,5 @@
 import { Model } from "objection"
+import moment from "moment"
 import User from "./user.js"
 import Like from "./like.js"
 import Comment from "./comment.js"
@@ -25,7 +26,7 @@ class Tweet extends Model {
   }
 
   static get virtualAttributes() {
-    return ["likesCount"]
+    return ["likesCount", "postedOn"]
   }
 
   static get relationMappings() {
@@ -60,15 +61,19 @@ class Tweet extends Model {
         relation: Model.HasManyRelation,
         modelClass: Tweet,
         join: {
-          from: 'tweets.id',
-          to: 'tweets.retweet_id'
-        }
+          from: "tweets.id",
+          to: "tweets.retweet_id",
+        },
       },
     }
   }
 
   get likesCount() {
     return this.likes ? this.likes.length : 0
+  }
+
+  get postedOn() {
+    return moment(this.created_at).fromNow()
   }
 
   userHasLiked(userId) {
