@@ -4,6 +4,7 @@ import { tweetBelongsToCurrentUser } from "../middlewares/tweetBelongsToCurrentU
 import Tweets from "../controllers/tweets.js"
 import { body } from "express-validator"
 import { handleErrorMessages } from "../middlewares/handleErrorMessages.js"
+import { handleFlashMessages } from "../middlewares/handleFlashMessages.js"
 
 export const tweetsRouter = new Router()
 const tweetsController = new Tweets()
@@ -11,6 +12,7 @@ const tweetsController = new Tweets()
 tweetsRouter.get(
   "/tweet/:id",
   handleErrorMessages,
+  handleFlashMessages,
   tweetsController.show.bind(tweetsController),
 )
 
@@ -78,7 +80,6 @@ tweetsRouter.post(
       ),
   ],
   authorized,
-  handleErrorMessages,
   tweetsController.addComment.bind(tweetsController),
 )
 

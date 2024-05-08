@@ -10,6 +10,7 @@ import { loadUser } from "./middlewares/loadUser.js"
 import { tweetsRouter } from "./routes/tweets.js"
 import Home from "./controllers/home.js"
 import { handleErrorMessages } from "./middlewares/handleErrorMessages.js"
+import { handleFlashMessages } from "./middlewares/handleFlashMessages.js"
 
 dotenv.config()
 
@@ -40,6 +41,7 @@ const homeController = new Home()
 app.get(
   "/",
   handleErrorMessages,
+  handleFlashMessages,
   homeController.index.bind(homeController),
 )
 

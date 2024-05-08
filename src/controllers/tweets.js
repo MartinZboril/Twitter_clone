@@ -47,7 +47,13 @@ export default class Tweets {
       user_id: userId,
     })
 
+    req.flash("messages", {
+      message: "Tweet added successfully!",
+      type: "success",
+    })
+
     await sendTweetListToAllConnections(res.locals.user.id)
+
     res.redirect("/")
   }
 
@@ -74,6 +80,11 @@ export default class Tweets {
 
     if (!tweet) return next()
 
+    req.flash("messages", {
+      message: "Tweet updated successfully!",
+      type: "success",
+    })
+
     await sendTweetDetailToAllConnections(
       tweet.id,
       res.locals.user.id,
@@ -89,6 +100,12 @@ export default class Tweets {
     if (!tweet) return next()
 
     await Tweet.query().deleteById(tweet.id)
+
+    req.flash("messages", {
+      message: "Tweet removed successfully!",
+      type: "danger",
+    })
+
     await sendTweetDeletedToAllConnections(tweet.id)
     res.redirect("/")
   }
@@ -150,6 +167,11 @@ export default class Tweets {
       tweet_id: tweetId,
       user_id: userId,
       content: comment,
+    })
+
+    req.flash("messages", {
+      message: "Comment added successfully!",
+      type: "success",
     })
 
     res.redirect(`/tweet/${tweetId}`)
