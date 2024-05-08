@@ -32,7 +32,7 @@ export const sendTweetListToAllConnections = async (
 
   const tweetList = await ejs.renderFile(
     "views/tweets/partials/_tweets.ejs",
-    { tweets, user },
+    { tweets, user, errors: {}, data: {} },
   )
 
   for (const connection of connections) {
@@ -61,7 +61,7 @@ export const sendTweetDetailToAllConnections = async (
 
   const tweetDetail = await ejs.renderFile(
     "views/tweets/partials/_tweet.ejs",
-    { tweet, user },
+    { tweet, user, errors: {}, data: {} },
   )
 
   for (const connection of connections) {

@@ -6,6 +6,7 @@ import {
   sendTweetListToAllConnections,
 } from "../websockets.js"
 import Like from "../models/like.js"
+import { validationResult } from "express-validator"
 
 export default class Tweets {
   async show(req, res, next) {
@@ -24,6 +25,20 @@ export default class Tweets {
   }
 
   async create(req, res) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      const errorMessages = errors
+        .array()
+        .reduce((acc, error) => {
+          acc[error.path] = error.msg
+          return acc
+        }, {})
+
+      req.flash("errors", errorMessages)
+      req.flash("data", req.body)
+      return res.redirect("/")
+    }
+
     const content = req.body.content
     const userId = res.locals.user.id
 
@@ -37,8 +52,23 @@ export default class Tweets {
   }
 
   async update(req, res, next) {
+    const errors = validationResult(req)
+    const tweetId = req.params.id
+    if (!errors.isEmpty()) {
+      const errorMessages = errors
+        .array()
+        .reduce((acc, error) => {
+          acc[error.path] = error.msg
+          return acc
+        }, {})
+
+      req.flash("errors", errorMessages)
+      req.flash("data", req.body)
+      return res.redirect(`/tweet/${tweetId}`)
+    }
+
     const tweet = await Tweet.query().patchAndFetchById(
-      req.params.id,
+      tweetId,
       { content: req.body.content },
     )
 
@@ -97,14 +127,29 @@ export default class Tweets {
   }
 
   async addComment(req, res) {
-    const content = req.body.content
     const tweetId = req.params.id
+
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      const errorMessages = errors
+        .array()
+        .reduce((acc, error) => {
+          acc[error.path] = error.msg
+          return acc
+        }, {})
+
+      req.flash("errors", errorMessages)
+      req.flash("data", req.body)
+      return res.redirect(`/tweet/${tweetId}`)
+    }
+
+    const comment = req.body.comment
     const userId = res.locals.user.id
 
     await Comment.query().insert({
       tweet_id: tweetId,
       user_id: userId,
-      content,
+      content: comment,
     })
 
     res.redirect(`/tweet/${tweetId}`)

@@ -1,4 +1,19 @@
 <div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Add a comment</h5>
+        <form method="post" action="/tweet/<%= tweet.id %>/comment">
+            <div class="mb-3">
+                <textarea class="form-control" name="comment" rows="3" placeholder="Write a comment..."><%= data.comment ? data.comment : '' %></textarea>
+                <% if (errors.comment) { %>
+                    <p style="color: red;"><%= errors.comment %></p>
+                <% } %>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
     <div class="card-header">
         Comments
     </div>
@@ -11,16 +26,4 @@
             </li>
         <% }); %>
     </ul>
-</div>
-
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Add a comment</h5>
-        <form method="post" action="/tweet/<%= tweet.id %>/comment">
-            <div class="mb-3">
-                <textarea class="form-control" name="content" rows="3" required placeholder="Write a comment..."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Post Comment</button>
-        </form>
-    </div>
 </div>

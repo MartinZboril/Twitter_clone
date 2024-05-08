@@ -33,7 +33,10 @@
         <h2>Update tweet</h2>
         <div class="mb-3">
             <label for="content" class="form-label">Content</label>
-            <input type="text" class="form-control" id="content" name="content" placeholder="Tweet" value="<%= tweet.content %>">
+            <input type="text" class="form-control" id="content" name="content" placeholder="Tweet" value="<%= data.content ? data.content : tweet.content %>">
+            <% if (errors.content) { %>
+                <p style="color: red;"><%= errors.content %></p>
+            <% } %>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>

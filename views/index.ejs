@@ -3,11 +3,13 @@
 
     <form method="post" action="/add-tweet">
         <div class="mb-3">
-            <textarea class="form-control" rows="5" id="content" name="content" placeholder="What's happening"></textarea>
+            <textarea class="form-control" rows="5" id="content" name="content" placeholder="What's happening"><%= data.content ? data.content : '' %></textarea>
+            <% if (errors.content) { %>
+                <p style="color: red;"><%= errors.content %></p>
+            <% } %>
         </div>
         <button type="submit" class="btn btn-primary">Tweet</button>
     </form>
-
     <div class="mt-3" id="tweetList">
         <%- include('tweets/partials/_tweets') %>
     </div>
